@@ -4,15 +4,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using ExcelDataReader;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
 public class ExcelToCSharp
 {
-    static string excelDir = "Assets/Excel";
-    static string JsonDir = "Assets/Out_Json";
-    static string CSDir = "Assets/Out_CS";
-    static List<string> mListColumnTypeInfo = null;
+    public class FieldTypeInfo
+    {
+        public string fieldDes = string.Empty;
+        public string fieldName = string.Empty;
+        public string fieldTypeName = string.Empty;
+    }
+
+    static string excelDir = "Assets/ExcelToJson/Excel";
+    static string JsonDir = "Assets/ExcelToJson/Out_Json";
+    static string CSDir = "Assets/ExcelToJson/Out_CS";
+    static List<FieldTypeInfo> mListColumnTypeInfo = null;
     static List<int> mListValidColumn = null;
     
     [MenuItem("Tools/ExcelToCSharp")] 
@@ -61,58 +69,34 @@ public class ExcelToCSharp
         //ParseData(result, filePath);
         CreateCSFile(result, filePath);
     }
-    
+
     static void ParseColumnType(DataSet result)
     {
-        mListColumnTypeInfo = new List<string>();
-        mListValidColumn = new List<int>();
-        for (int i = 0; i < result.Tables.Count; i++)
-        {
-            DataTable mTable = result.Tables[i];
-            if (mTable.TableName == "Export Summary")
-            {
-                continue;
-            }
-            
-            for (int j = 0; j < mTable.Columns.Count; j++)
-            {
-                string fieldName = string.Empty;
-                string desName = string.Empty;
-                string typeName = string.Empty;
-                string subtypeName = string.Empty;
-                
-                for (int k = 0; k < mTable.Rows.Count; k++)
-                {
-                    string value = mTable.Rows[k][j].ToString();
-                    Console.WriteLine("(" + j + ", " + k + ") : " + value);
-                    
-                    if (k == 1) //字段名
-                    {
-                        fieldName = value;
-                        Debug.Log("字段名： " + fieldName + " | " + value);
-                    }
-                    else if (k == 2) //类型
-                    {
-                        typeName = value;
-                        Debug.Log("类型名： " + typeName + " | " + value);
-                    }
-                    else if (k == 0) //描述
-                    {
-                        desName = value;
-                        Debug.Log("描述： " + desName + " | " + value);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                
-                mListColumnTypeInfo.Add(fieldName);
-                mListColumnTypeInfo.Add(desName);
-                mListColumnTypeInfo.Add(typeName);
-                mListColumnTypeInfo.Add(subtypeName);
-            }
-        }
+        //mListColumnTypeInfo = new List<FieldTypeInfo>();
+        //mListValidColumn = new List<int>();
+        //for (int i = 0; i < result.Tables.Count; i++)
+        //{
+        //    DataTable mDataTable = result.Tables[i];
+        //    if (mDataTable.TableName == "Export Summary")
+        //    {
+        //        continue;
+        //    }
+
+        //    for (int j = 0; j < mDataTable.Columns.Count; j++)
+        //    {
+        //        string fieldDes = mDataTable.Rows[0][j].ToString().Trim();
+        //        string fieldName = mDataTable.Rows[1][j].ToString().Trim();
+        //        string fieldTypeName = mDataTable.Rows[2][j].ToString().Trim();
+        //        fieldTypeName = ConvertType(fieldTypeName); continue;
+
+        //        FieldTypeInfo info = new FieldTypeInfo();
+        //        info.fieldDes = fieldDes;
+        //        info.fieldName = fieldName;
+        //        info.fieldTypeName = fieldTypeName;
+
+        //        mListColumnTypeInfo.Add(info);
+        //    }
+        //}
     }
     
     static void CheckValidColumn()
@@ -122,6 +106,11 @@ public class ExcelToCSharp
     
     static void CreateCSFile(DataSet mCollection, string filePath)
     {
+        if(mCollection.Tables.Count == 0)
+        {
+            return;
+        }
+
         string csFileName = Path.GetFileNameWithoutExtension(filePath).Trim();
         
         string mStr = "";
@@ -132,15 +121,17 @@ public class ExcelToCSharp
         {
             if (mDataTable.Rows.Count >= 3)
             {
-                string className = mCollection.Tables.Count > 0 ? mDataTable.TableName : csFileName;
-                mStr += "\tpublic class " + className + ":ExcelDbBase\n\t{\n";
+                string className = mCollection.Tables.Count > 1 ? csFileName + mDataTable.TableName : csFileName;
+                mStr += "\tpublic class " + className + " : DbBase\n\t{\n";
                 //字段
                 for (int j = 0; j < mDataTable.Columns.Count; j++)
                 {
                     string fieldDes = mDataTable.Rows[0][j].ToString().Trim();
                     string fieldName = mDataTable.Rows[1][j].ToString().Trim();
                     string fieldTypeName = mDataTable.Rows[2][j].ToString().Trim();
-                    
+                    fieldTypeName = ConvertType(fieldTypeName);
+
+
                     if (!string.IsNullOrWhiteSpace(fieldDes) && !string.IsNullOrWhiteSpace(fieldName) &&
                         !string.IsNullOrWhiteSpace(fieldTypeName))
                     {
@@ -163,14 +154,41 @@ public class ExcelToCSharp
                 }
                 
                 mStr += "\t}\n\n";
+
+                CreateJsonFile(mDataTable, className);
             }
         }
         
         mStr += "}";
         
-        string csFilePath = Path.Combine(CSDir, csFileName);
-        File.WriteAllText(csFilePath + ".cs", mStr);
-        Debug.Log("Finsh Save CS File: " +csFileName);
+        string csFilePath = Path.Combine(CSDir, csFileName) + ".cs";
+        File.WriteAllText(csFilePath, mStr);
+        Debug.Log("Finsh Save CS File: " + csFilePath);
+    }
+
+    static void CreateJsonFile(DataTable mDataTable, string csJsonName)
+    {
+        List<Dictionary<string, string>> mItemList = new List<Dictionary<string, string>>();
+
+        int firstDataRow = 3;
+        for (int i = firstDataRow; i < mDataTable.Rows.Count; i++)
+        {
+            DataRow row = mDataTable.Rows[i];
+            var rowData = new Dictionary<string, string>();
+            for (int j = 0; j < mDataTable.Columns.Count; j++)
+            {
+                string fieldName = mDataTable.Rows[1][j].ToString().Trim();
+
+                string value = mDataTable.Rows[i][j].ToString().Trim();
+                rowData[fieldName] = value;
+            }
+            mItemList.Add(rowData);
+        }
+
+        string mStr = JsonConvert.SerializeObject(mItemList);
+        string JsonFilePath = Path.Combine(JsonDir, csJsonName) + ".json";
+        File.WriteAllText(JsonFilePath, mStr);
+        Debug.Log("Finsh Save Json File: " + JsonFilePath);
     }
 
     // static void ParseData(DataSet result)
@@ -309,8 +327,9 @@ public class ExcelToCSharp
     //     String outFileName = outPath + ThemeName + ".lua";
     //     File.WriteAllText(outFileName, outStr);
     // }
-    
-    public string ConvertType(string oriType)
+
+
+    public static string ConvertType(string oriType)
     {
         if (oriType.ToLower() == "Int32".ToLower())
         {
@@ -320,9 +339,9 @@ public class ExcelToCSharp
         {
             return "string";
         }
-        else if (oriType.ToLower() == "Int32".ToLower())
+        else if (oriType.ToLower() == "Int32[]".ToLower())
         {
-            
+            return "int[]";
         }
         
         return string.Empty;

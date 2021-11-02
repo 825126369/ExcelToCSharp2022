@@ -2,24 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 namespace s7u.dtb.exceldata
 {
-	public class ConditionData:ExcelDbBase
+	public class ConditionData : DbBase
 	{
 		/// <summary>
 		/// 条件id
 		/// </summary>
-		public readonly Int32 ConditionID;
+		public readonly int ConditionID;
 		/// <summary>
 		/// 条件名称
 		/// </summary>
-		public readonly String NconditionName;
+		public readonly string NconditionName;
 		/// <summary>
 		/// 条件标题
 		/// </summary>
-		public readonly String NconditionTitle;
+		public readonly string NconditionTitle;
 		/// <summary>
 		/// 条件符号
 		/// </summary>
-		public readonly String Img;
+		public readonly string Img;
 	}
 
 }

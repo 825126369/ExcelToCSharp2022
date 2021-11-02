@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 namespace s7u.dtb.exceldata
 {
-	public class Sheet1:ExcelDbBase
+	public class CityDataSheet1 : DbBase
 	{
 		/// <summary>
 		/// 城市id
 		/// </summary>
-		public readonly int32 CityID;
+		public readonly int CityID;
 		/// <summary>
 		/// 城市名称
 		/// </summary>
@@ -23,7 +23,7 @@ namespace s7u.dtb.exceldata
 		/// <summary>
 		/// 城市唱片色
 		/// </summary>
-		public readonly int32 CityColor;
+		public readonly int CityColor;
 	}
 
 }

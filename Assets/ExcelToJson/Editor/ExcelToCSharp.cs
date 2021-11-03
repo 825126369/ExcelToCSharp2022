@@ -38,7 +38,7 @@ public class ExcelToCSharp
         
        //System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         
-        string[] allFiles = Directory.GetFiles("Assets/", "*.xlsx", SearchOption.AllDirectories);
+        string[] allFiles = Directory.GetFiles(excelDir, "*.xlsx", SearchOption.AllDirectories);
         foreach (string filePath in allFiles)
         {
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
@@ -344,7 +344,7 @@ public class ExcelToCSharp
             return "int[]";
         }
         
-        return string.Empty;
+        return oriType;
     }
 
 }

@@ -13,29 +13,29 @@ namespace AAA
         },
         typeof(LevelConditionParser)
         )]
- public class LevelCondition
+ public class LevelCondition : IGameData
     {
         
           /// <summary>
           /// 条件id
           /// </summary>
-        public int32 ConditionID { get; private set;}
+        public int ConditionID { get; private set;}
         
           /// <summary>
           /// 关卡达成条件
           /// </summary>
-        public Int32[] Condition { get; private set;}
+        public int[] Condition { get; private set;}
         
           /// <summary>
           /// 达成条件数量
           /// </summary>
-        public Int32[] ConditionNumber { get; private set;}
+        public int[] ConditionNumber { get; private set;}
         
         
         public LevelCondition(
-        int32 _ConditionID
-        ,Int32[] _Condition
-        ,Int32[] _ConditionNumber
+        int _ConditionID
+        ,int[] _Condition
+        ,int[] _ConditionNumber
         )               
         {
                 
@@ -64,11 +64,11 @@ namespace AAA
             {
                 
                 
-                 int32  _ConditionID = row.Get_int32(row.Values[0], "");              
+                 int  _ConditionID = row.Get_int(row.Values[0], "");              
                 
-                 Int32[]  _Condition = row.Get_Int32_array(row.Values[1], "");              
+                 int[]  _Condition = row.Get_int_array(row.Values[1], "");              
                 
-                 Int32[]  _ConditionNumber = row.Get_Int32_array(row.Values[2], "");              
+                 int[]  _ConditionNumber = row.Get_int_array(row.Values[2], "");              
                 
 
                 m_LevelCondition = new LevelCondition(

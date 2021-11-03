@@ -13,7 +13,7 @@ namespace {{ NameSpace }}
         },
         typeof({{file.ClassName}}Parser)
         )]
- public class {{file.ClassName}}
+ public class {{file.ClassName}} : IGameData
     {
         {% for field in file.Fields %}
           /// <summary>

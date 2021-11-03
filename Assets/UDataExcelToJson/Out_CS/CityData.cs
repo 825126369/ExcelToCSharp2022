@@ -13,13 +13,13 @@ namespace AAA
         },
         typeof(CityDataParser)
         )]
- public class CityData
+ public class CityData : IGameData
     {
         
           /// <summary>
           /// 城市id
           /// </summary>
-        public int32 CityID { get; private set;}
+        public int CityID { get; private set;}
         
           /// <summary>
           /// 城市名称
@@ -39,15 +39,15 @@ namespace AAA
           /// <summary>
           /// 城市唱片色
           /// </summary>
-        public int32 CityColor { get; private set;}
+        public int CityColor { get; private set;}
         
         
         public CityData(
-        int32 _CityID
+        int _CityID
         ,string _CityName
         ,string _CityBGIMG
         ,string _CityIMG
-        ,int32 _CityColor
+        ,int _CityColor
         )               
         {
                 
@@ -78,7 +78,7 @@ namespace AAA
             {
                 
                 
-                 int32  _CityID = row.Get_int32(row.Values[0], "");              
+                 int  _CityID = row.Get_int(row.Values[0], "");              
                 
                  string  _CityName = row.Get_string(row.Values[1], "");              
                 
@@ -86,7 +86,7 @@ namespace AAA
                 
                  string  _CityIMG = row.Get_string(row.Values[3], "");              
                 
-                 int32  _CityColor = row.Get_int32(row.Values[4], "");              
+                 int  _CityColor = row.Get_int(row.Values[4], "");              
                 
 
                 m_CityData = new CityData(

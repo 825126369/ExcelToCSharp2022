@@ -64,13 +64,31 @@ namespace TableML.Compiler
             _config = cfg;
         }
 
+        public static string ConvertType(string oriType)
+        {
+            if (oriType.ToLower() == "Int32".ToLower())
+            {
+                return "int";
+            }
+            else if (oriType.ToLower() == "string".ToLower())
+            {
+                return "string";
+            }
+            else if (oriType.ToLower() == "Int32[]".ToLower())
+            {
+                return "int[]";
+            }
+            
+            return oriType;
+        }
+
 
         private TableCompileResult DoCompilerExcelReader(string path, ITableSourceFile excelFile, string compileToFilePath = null, string compileBaseDir = null, bool doCompile = true)
         {
             var renderVars = new TableCompileResult();
             renderVars.ExcelFile = excelFile;
             renderVars.FieldsInternal = new List<TableColumnVars>();
-
+            
             var tableBuilder = new StringBuilder();
             var rowBuilder = new StringBuilder();
             var ignoreColumns = new HashSet<int>();
@@ -90,14 +108,15 @@ namespace TableML.Compiler
                         if (colIndex > 0)
                             tableBuilder.Append("\t");
                         tableBuilder.Append(colNameStr);
-
+                        
                         string typeName = "string";
                         string defaultVal = "";           
                         var attrs = excelFile.ColName2Statement[colNameStr].Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
                         // Type
                         if (attrs.Length > 0)
                         {
-                            typeName = attrs[0];                        
+                            typeName = attrs[0];
+                            typeName = ConvertType(typeName);
                         }
                         // Default Value
                         if (attrs.Length > 1)
@@ -111,7 +130,7 @@ namespace TableML.Compiler
                                 renderVars.PrimaryKey = colNameStr;
                             }
                         }
-
+                        
                         renderVars.FieldsInternal.Add(new TableColumnVars
                         {
                             Index = colIndex - ignoreColumns.Count, // count the comment columns

@@ -1,0 +1,12 @@
+Id	AdCategory	Name	LimitCount	Level	ContentItem	Currency
+int	AdCategory/None	string	int/0	int/-1	Dictionary<int,int>	Dictionary<CurrencyType,int>
+1001	Reward	体力广告	5	-1		
+1002	Reward	双倍签到	1	-1		
+1003	Reward	失败广告	-1	-1		
+1004	Reward	激励道具	5	-1		
+1005	Reward	天降礼包	1	5	30004:1	Co:2000
+1006	WinAD	胜利礼包1	1	-1		Di:3|Co:200
+1007	WinAD	胜利礼包2	1	-1		Di:3|Co:200
+1008	WinAD	胜利礼包3	1	-1		Di:3|Co:200
+1009	WinAD	胜利礼包4	1	-1	30004:1	Co:200
+1010	WinAD	胜利礼包5	1	-1	30004:1	Co:200

@@ -13,43 +13,43 @@ namespace AAA
         },
         typeof(LevelDataParser)
         )]
- public class LevelData
+ public class LevelData : IGameData
     {
         
           /// <summary>
           /// 关卡id
           /// </summary>
-        public Int32 LevelID { get; private set;}
+        public int LevelID { get; private set;}
         
           /// <summary>
           /// 关卡所属城市
           /// </summary>
-        public Int32 CityID { get; private set;}
+        public int CityID { get; private set;}
         
           /// <summary>
           /// 关卡初始状态
           /// </summary>
-        public Int32 LevelState { get; private set;}
+        public int LevelState { get; private set;}
         
           /// <summary>
           /// 剧情表id
           /// </summary>
-        public Int32 PlotContentID { get; private set;}
+        public int PlotContentID { get; private set;}
         
           /// <summary>
           /// 解锁的下一关卡
           /// </summary>
-        public Int32 UnlockingLevelID { get; private set;}
+        public int UnlockingLevelID { get; private set;}
         
           /// <summary>
           /// 歌曲名称
           /// </summary>
-        public Int32 MusicList { get; private set;}
+        public int MusicList { get; private set;}
         
           /// <summary>
           /// 歌谱名称
           /// </summary>
-        public Int32 MusicSorce { get; private set;}
+        public int MusicSorce { get; private set;}
         
           /// <summary>
           /// 关卡背景图
@@ -58,13 +58,13 @@ namespace AAA
         
         
         public LevelData(
-        Int32 _LevelID
-        ,Int32 _CityID
-        ,Int32 _LevelState
-        ,Int32 _PlotContentID
-        ,Int32 _UnlockingLevelID
-        ,Int32 _MusicList
-        ,Int32 _MusicSorce
+        int _LevelID
+        ,int _CityID
+        ,int _LevelState
+        ,int _PlotContentID
+        ,int _UnlockingLevelID
+        ,int _MusicList
+        ,int _MusicSorce
         ,string _LevelBGimg
         )               
         {
@@ -99,19 +99,19 @@ namespace AAA
             {
                 
                 
-                 Int32  _LevelID = row.Get_Int32(row.Values[0], "");              
+                 int  _LevelID = row.Get_int(row.Values[0], "");              
                 
-                 Int32  _CityID = row.Get_Int32(row.Values[1], "");              
+                 int  _CityID = row.Get_int(row.Values[1], "");              
                 
-                 Int32  _LevelState = row.Get_Int32(row.Values[2], "");              
+                 int  _LevelState = row.Get_int(row.Values[2], "");              
                 
-                 Int32  _PlotContentID = row.Get_Int32(row.Values[3], "");              
+                 int  _PlotContentID = row.Get_int(row.Values[3], "");              
                 
-                 Int32  _UnlockingLevelID = row.Get_Int32(row.Values[4], "");              
+                 int  _UnlockingLevelID = row.Get_int(row.Values[4], "");              
                 
-                 Int32  _MusicList = row.Get_Int32(row.Values[5], "");              
+                 int  _MusicList = row.Get_int(row.Values[5], "");              
                 
-                 Int32  _MusicSorce = row.Get_Int32(row.Values[6], "");              
+                 int  _MusicSorce = row.Get_int(row.Values[6], "");              
                 
                  string  _LevelBGimg = row.Get_string(row.Values[7], "");              
                 

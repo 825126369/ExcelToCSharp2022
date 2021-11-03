@@ -17,6 +17,11 @@ namespace AAA
     {
         
           /// <summary>
+          /// 序号
+          /// </summary>
+        public int Id { get; private set;}
+        
+          /// <summary>
           /// 关卡id
           /// </summary>
         public int LevelID { get; private set;}
@@ -39,7 +44,7 @@ namespace AAA
           /// <summary>
           /// 解锁的下一关卡
           /// </summary>
-        public int UnlockingLevelID { get; private set;}
+        public int[] UnlockingLevelID { get; private set;}
         
           /// <summary>
           /// 歌曲名称
@@ -58,17 +63,19 @@ namespace AAA
         
         
         public LevelData(
-        int _LevelID
+        int _Id
+        ,int _LevelID
         ,int _CityID
         ,int _LevelState
         ,int _PlotContentID
-        ,int _UnlockingLevelID
+        ,int[] _UnlockingLevelID
         ,int _MusicList
         ,int _MusicSorce
         ,string _LevelBGimg
         )               
         {
                 
+            this.Id=_Id;          
             this.LevelID=_LevelID;          
             this.CityID=_CityID;          
             this.LevelState=_LevelState;          
@@ -99,26 +106,29 @@ namespace AAA
             {
                 
                 
-                 int  _LevelID = row.Get_int(row.Values[0], "");              
+                 int  _Id = row.Get_int(row.Values[0], "");              
                 
-                 int  _CityID = row.Get_int(row.Values[1], "");              
+                 int  _LevelID = row.Get_int(row.Values[1], "");              
                 
-                 int  _LevelState = row.Get_int(row.Values[2], "");              
+                 int  _CityID = row.Get_int(row.Values[2], "");              
                 
-                 int  _PlotContentID = row.Get_int(row.Values[3], "");              
+                 int  _LevelState = row.Get_int(row.Values[3], "");              
                 
-                 int  _UnlockingLevelID = row.Get_int(row.Values[4], "");              
+                 int  _PlotContentID = row.Get_int(row.Values[4], "");              
                 
-                 int  _MusicList = row.Get_int(row.Values[5], "");              
+                 int[]  _UnlockingLevelID = row.Get_int_array(row.Values[5], "");              
                 
-                 int  _MusicSorce = row.Get_int(row.Values[6], "");              
+                 int  _MusicList = row.Get_int(row.Values[6], "");              
                 
-                 string  _LevelBGimg = row.Get_string(row.Values[7], "");              
+                 int  _MusicSorce = row.Get_int(row.Values[7], "");              
+                
+                 string  _LevelBGimg = row.Get_string(row.Values[8], "");              
                 
 
                 m_LevelData = new LevelData(
                 
-                _LevelID 
+                _Id 
+                ,_LevelID 
                 ,_CityID 
                 ,_LevelState 
                 ,_PlotContentID 

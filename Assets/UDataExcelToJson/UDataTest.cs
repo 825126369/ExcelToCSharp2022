@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using uData.DataTable;
 using UnityEngine;
 
@@ -11,10 +12,18 @@ public class UDataTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       // CreateDataTable(typeof());
+       CreateDataTable(typeof(AAA.LevelData));
+        
+       DataTableService.DataTable<AAA.LevelData> mLeveDataTable = m_DataTables["AAA.LevelData"] as DataTableService.DataTable<AAA.LevelData>;
+       foreach (var v in mLeveDataTable.GetAllDatas())
+       {
+           AAA.LevelData data = v as AAA.LevelData;
+               Debug.Log(data.UnlockingLevelID[0] +", " +data.UnlockingLevelID[1]);
+           
+       }
     }
     
-    internal DataTableBase CreateDataTable(Type dataRowType)
+     DataTableBase CreateDataTable(Type dataRowType)
     {
         if (!typeof(IGameData).IsAssignableFrom(dataRowType))
         {

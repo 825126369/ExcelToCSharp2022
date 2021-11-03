@@ -65,7 +65,7 @@ namespace TableML
         public int[] Get_int_array(string value, string defaultValue)
         {
             var str = Get_string(value, defaultValue);
-            string[] strs = str.Split('|');
+            string[] strs = str.Split('|', ',');
             int[] ret = new int[strs.Length];
             for (int i = 0; i < strs.Length; i++)
             {
@@ -73,11 +73,11 @@ namespace TableML
             }
             return ret;
         }
-
+        
         public object[] Get_object_array(string value, string defaultValue)
         {
             var str = Get_string(value, defaultValue);
-            string[] strs = str.Split('|');
+            string[] strs = str.Split('|', ',');
             object[] ret = new object[strs.Length];
             for (int i = 0; i < strs.Length; i++)
             {
@@ -131,15 +131,15 @@ namespace TableML
         public string[] Get_string_array(string value, string defaultValue)
         {
             var str = Get_string(value, defaultValue);
-            return str.Split('|');
+            return str.Split('|', ',');
         }
-
+        
         public Dictionary<TKey, TValue> Get_Dictionary<TKey, TValue>(string value, string defaultValue)
         {
             var dict = new Dictionary<TKey, TValue>();
             var str = Get_String(value, defaultValue);
-            var arr = str.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-
+            var arr = str.Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            
             foreach (var item in arr)
             {
                 var kv = item.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
@@ -169,7 +169,7 @@ namespace TableML
             if(string.IsNullOrEmpty(value)) return Get_Enum<T>(defaultValue);
             return Get_Enum<T>(value);
         }
-
+        
         public T Get_Instance<T>(string value, string defaultValue)
         {
             if (string.IsNullOrEmpty(value)) return UnityEngine.JsonUtility.FromJson<T>(defaultValue);

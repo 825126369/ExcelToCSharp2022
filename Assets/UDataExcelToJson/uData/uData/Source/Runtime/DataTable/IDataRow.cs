@@ -17,7 +17,7 @@ namespace uData.DataTable
         /// <returns></returns>
         IGameData GetData();
     }
-
+    
     public interface IGameData
     {
         int Id { get; }

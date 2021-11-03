@@ -1,0 +1,18 @@
+条件id	条件名称	条件标题	条件符号
+ConditionID	NconditionName	NconditionTitle	Img
+0	null	通关	通关
+1	完成关卡	通关	通关
+2	血量  Max	血量	血量
+3	血量  Min	血量	血量
+4	连击  Max	连击	连击
+5	连击  Min	连击	连击
+6	移动  Max	运动距离	距离
+7	移动  Min	运动距离	距离
+8	错过音符  Max	miss数量	miss
+9	错过音符  Min	miss数量	miss
+10	分数  Max	分数	得分
+11	分数  Min	分数	得分
+12	完美音符  Max	完美音符	完美劈开
+13	完美音符  Min	炸弹	炸弹
+14	障碍物  Min	躲避墙	障碍物
+15	打错音符  Min	错误	BAD

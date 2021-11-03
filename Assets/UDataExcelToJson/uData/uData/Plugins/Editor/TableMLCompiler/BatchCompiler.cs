@@ -58,33 +58,32 @@ namespace TableML.Compiler
 		/// 条件编译变量
 		/// </summary>
 		public string[] CompileSettingConditionVars;
-
+		
 		/// <summary>
 		/// 可以为模板提供额外生成代码块！返回string即可！
 		/// 自定义[InitializeOnLoad]的类并设置这个委托
 		/// </summary>
 		public CustomExtraStringDelegate CustomExtraString;
 		public delegate string CustomExtraStringDelegate(TableCompileResult tableCompileResult);
-
+		
 		/// <summary>
 		/// Generate static code from settings
 		/// </summary>
 		/// <param name="templateVars"></param>
 		void GenerateCode(string templateString, string genCodeFilePath, string nameSpace, List<Hash> files)
 		{
-
 			var codeTemplates = new Dictionary<string, string>()
 			{
 				{templateString, genCodeFilePath},
 			};
-
+			
 			foreach (var kv in codeTemplates)
 			{
 				var templateStr = kv.Key;
 				var exportPath = kv.Value;
-
+				
 				// 生成代码
-				var template = Template.Parse(templateStr);
+				Template template = Template.Parse(templateStr);
 				var topHash = new Hash();
 				topHash["NameSpace"] = nameSpace;
 				topHash["Files"] = files;
@@ -124,7 +123,9 @@ namespace TableML.Compiler
 		/// <param name="forceAll">no diff! only force compile will generate code</param>
 		/// <returns></returns>
 		public List<TableCompileResult> CompileTableMLAll(string sourcePath, string compilePath, 
-		                                                  string genCodeFilePath, string genCodeTemplateString = null, string nameSpace = "AppSettings", string changeExtension = ".tml", string settingCodeIgnorePattern = null, bool forceAll = false)
+		                                                  string genCodeFilePath, string genCodeTemplateString = null, 
+		                                                  string nameSpace = "AppSettings", string changeExtension = ".tml", 
+		                                                  string settingCodeIgnorePattern = null, bool forceAll = false)
 		{
 			var results = new List<TableCompileResult>();
 			var compileBaseDir = compilePath;

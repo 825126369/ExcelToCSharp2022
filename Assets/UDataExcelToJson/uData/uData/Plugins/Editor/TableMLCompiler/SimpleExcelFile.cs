@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using ExcelDataReader;
 using NPOI.SS.UserModel;
 using UnityEngine;
 
@@ -101,11 +103,11 @@ namespace TableML.Compiler
         /// 预留行数
         /// </summary>
         private const int PreserverRowCount = 3;
-
+        
         //private DataTable DataTable_;
         private string Path;
-        private IWorkbook Workbook;
-        private ISheet Worksheet;
+        private DataSet Workbook;
+        private DataTable Worksheet;
         //private TableFile _tableFile;
         //public bool IsLoadSuccess = true;
         private int _columnCount;
@@ -120,25 +122,30 @@ namespace TableML.Compiler
             
             ParseExcel(excelPath);
         }
-
+        
         /// <summary>
         /// Parse Excel file to data grid
         /// </summary>
         /// <param name="filePath"></param>
         private void ParseExcel(string filePath)
         {
-            using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) // no isolation
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
-                try
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    Workbook = WorkbookFactory.Create(file);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(string.Format("无法打开Excel: {0}, 可能原因：正在打开？或是Office2007格式（尝试另存为）？ {1}", filePath, e.Message));
-                    //IsLoadSuccess = false;
+                    do
+                    {
+                        while (reader.Read())
+                        {
+                            
+                        }
+                    } while (reader.NextResult());
+                    
+                    System.Data.DataSet result = reader.AsDataSet();
+                    Workbook = result;
                 }
             }
+            
             //if (IsLoadSuccess)
             {
                 if (Workbook == null)
@@ -149,47 +156,47 @@ namespace TableML.Compiler
 
                 //var dt = new DataTable();
 
-                Worksheet = Workbook.GetSheetAt(0);
+                Worksheet = Workbook.Tables[0];
                 if (Worksheet == null)
                 {
                     Debug.LogError("Null Worksheet");
                     return;
                 }
-
+                
                 var sheetRowCount = GetWorksheetCount();
                 if (sheetRowCount < PreserverRowCount)
                 {
                     Debug.LogError(string.Format("At lease {0} rows of this excel", sheetRowCount));
                     return;
                 }
-
+                
                 // 列头名
-                var headerRow = Worksheet.GetRow(0);
+                DataRow headerRow = Worksheet.Rows[1];
                 // 列总数保存
-                int columnCount = _columnCount = headerRow.LastCellNum;
-
+                int columnCount = _columnCount = Worksheet.Columns.Count;
+                
                 for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
                 {
-                    var cell = headerRow.GetCell(columnIndex);
+                    var cell = headerRow[columnIndex];
                     var headerName = cell != null ? cell.ToString().Trim() : ""; // trim!
                     ColName2Index[headerName] = columnIndex;
                     Index2ColName[columnIndex] = headerName;
                 }
                 // 表头声明
-                var statementRow = Worksheet.GetRow(1);
+                var statementRow = Worksheet.Rows[2];
                 for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
                 {
                     var colName = Index2ColName[columnIndex];
-                    var statementCell = statementRow.GetCell(columnIndex);
+                    var statementCell = statementRow[columnIndex];
                     var statementString = statementCell != null ? statementCell.ToString() : "";
                     ColName2Statement[colName] = statementString;
                 }
                 // 表头注释
-                var commentRow = Worksheet.GetRow(2);
+                var commentRow = Worksheet.Rows[0];
                 for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
                 {
                     var colName = Index2ColName[columnIndex];
-                    var commentCell = commentRow.GetCell(columnIndex);
+                    var commentCell = commentRow[columnIndex];
                     var commentString =  commentCell != null ? commentCell.ToString() : "";
                     ColName2Comment[colName] = commentString;
                 }
@@ -203,16 +210,6 @@ namespace TableML.Compiler
         public bool HasColumn(string columnName)
         {
             return ColName2Index.ContainsKey(columnName);
-        }
-
-        /// <summary>
-        /// 清除行内容
-        /// </summary>
-        /// <param name="row"></param>
-        public void ClearRow(int row)
-        {
-            var theRow = Worksheet.GetRow(row);
-            Worksheet.RemoveRow(theRow);
         }
 
         public float GetFloat(string columnName, int row)
@@ -233,23 +230,22 @@ namespace TableML.Compiler
         public string GetString(string columnName, int dataRow)
         {
             dataRow += PreserverRowCount;
-
-            var theRow = Worksheet.GetRow(dataRow);
-            if (theRow == null)
-                theRow = Worksheet.CreateRow(dataRow);
-
+                
+            var theRow = Worksheet.Rows[dataRow];
             var colIndex = ColName2Index[columnName];
-            var cell = theRow.GetCell(colIndex);
-            if (cell == null)
-                cell = theRow.CreateCell(colIndex);
-            if (cell.CellType == CellType.Formula)
-                return cell.StringCellValue;
-            if (cell.CellType == CellType.String)
-                return cell.StringCellValue;
-            if (cell.CellType == CellType.Boolean)
-                return cell.BooleanCellValue ? "1" : "0";
-            if (cell.CellType == CellType.Numeric)
-                return cell.NumericCellValue.ToString(CultureInfo.InvariantCulture);
+            var cell = theRow[colIndex];
+            // if (cell != null)
+            // {
+            //     if (cell.CellType == CellType.Formula)
+            //         return cell.StringCellValue;
+            //     if (cell.CellType == CellType.String)
+            //         return cell.StringCellValue;
+            //     if (cell.CellType == CellType.Boolean)
+            //         return cell.BooleanCellValue ? "1" : "0";
+            //     if (cell.CellType == CellType.Numeric)
+            //         return cell.NumericCellValue.ToString(CultureInfo.InvariantCulture);
+            // }
+            
             return cell.ToString();
         }
 
@@ -261,7 +257,7 @@ namespace TableML.Compiler
         {
             return GetWorksheetCount() - PreserverRowCount;
         }
-
+        
         /// <summary>
         /// 工作表的总行数
         /// </summary>
@@ -270,92 +266,31 @@ namespace TableML.Compiler
         {
             if (Worksheet != null)
             {
-                return Worksheet.LastRowNum + 1;
+                return Worksheet.Rows.Count;
             }
 
             return -1;
         }
 
-        private ICellStyle GreyCellStyleCache;
-
-        public void SetRowGrey(int row)
-        {
-            var theRow = Worksheet.GetRow(row);
-            foreach (var cell in theRow.Cells)
-            {
-                if (GreyCellStyleCache == null)
-                {
-                    var newStyle = Workbook.CreateCellStyle();
-                    newStyle.CloneStyleFrom(cell.CellStyle);
-                    //newStyle.FillBackgroundColor = colorIndex;
-                    newStyle.FillPattern = FillPattern.Diamonds;
-                    GreyCellStyleCache = newStyle;
-                }
-
-                cell.CellStyle = GreyCellStyleCache;
-            }
-        }
-
-        public void SetRow(string columnName, int row, string value)
-        {
-            if (!ColName2Index.ContainsKey(columnName))
-            {
-                Debug.LogError(string.Format("No Column: {0} of File: {1}", columnName, Path));
-            }
-            var theRow = Worksheet.GetRow(row);
-            if (theRow == null)
-                theRow = Worksheet.CreateRow(row);
-            var cell = theRow.GetCell(ColName2Index[columnName]);
-            if (cell == null)
-                cell = theRow.CreateCell(ColName2Index[columnName]);
-
-            if (value.Length > (1 << 14)) // if too long
-            {
-                value = value.Substring(0, 1 << 14);
-            }
-            cell.SetCellValue(value);
-        }
-
-        public void Save(string toPath)
-        {
-            /*for (var loopRow = Worksheet.FirstRowNum; loopRow <= Worksheet.LastRowNum; loopRow++)
-        {
-            var row = Worksheet.GetRow(loopRow);
-            bool emptyRow = true;
-            foreach (var cell in row.Cells)
-            {
-                if (!string.IsNullOrEmpty(cell.ToString()))
-                    emptyRow = false;
-            }
-            if (emptyRow)
-                Worksheet.RemoveRow(row);
-        }*/
-            //try
-            {
-                using (var memStream = new MemoryStream())
-                {
-                    Workbook.Write(memStream);
-                    memStream.Flush();
-                    memStream.Position = 0;
-
-                    using (var fileStream = new FileStream(toPath, FileMode.Create, FileAccess.Write))
-                    {
-                        var data = memStream.ToArray();
-                        fileStream.Write(data, 0, data.Length);
-                        fileStream.Flush();
-                    }
-                }
-            }
-            //catch (Exception e)
-            //{
-            //    CDebug.LogError(e.Message);
-            //    CDebug.LogError("是否打开了Excel表？");
-            //}
-        }
-        public void Save()
-        {
-            Save(Path);
-        }
+        // private ICellStyle GreyCellStyleCache;
+        //
+        // public void SetRowGrey(int row)
+        // {
+        //     var theRow = Worksheet.Rows[row];
+        //     foreach (var cell in theRow.ItemArray)
+        //     {
+        //         if (GreyCellStyleCache == null)
+        //         {
+        //             var newStyle = Workbook.CreateCellStyle();
+        //             newStyle.CloneStyleFrom(cell.CellStyle);
+        //             //newStyle.FillBackgroundColor = colorIndex;
+        //             newStyle.FillPattern = FillPattern.Diamonds;
+        //             GreyCellStyleCache = newStyle;
+        //         }
+        //
+        //         cell.CellStyle = GreyCellStyleCache;
+        //     }
+        // }
 
         /// <summary>
         /// 获取列总数

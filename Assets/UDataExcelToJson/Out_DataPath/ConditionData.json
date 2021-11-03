@@ -1,5 +1,5 @@
-条件id	条件名称	条件标题	条件符号
 ConditionID	NconditionName	NconditionTitle	Img
+Int32	String	String	String
 0	null	通关	通关
 1	完成关卡	通关	通关
 2	血量  Max	血量	血量

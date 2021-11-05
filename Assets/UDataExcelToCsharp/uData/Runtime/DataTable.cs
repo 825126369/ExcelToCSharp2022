@@ -2,26 +2,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using uData;
+using UnityEngine;
 
 namespace uData
 {
     public sealed partial class DataTableService
     {
-        public sealed class DataTable<T> : DataTableBase where T : IGameData
+        public sealed class DataTable<T> : DataTableBase where T :  IGameData
         {
 #if UNITY_EDITOR && HOTEXCEL
             private int m_ReloadCount;      
             private EventHandler<EditorHotUpdateEventArg> m_HoTUpdateEventArg;
 #endif
-
+            
             private readonly Dictionary<int, T> m_dict;           
-            private IGameData m_MinIdData;
-            private IGameData m_MaxIdData;
+            private T m_MinIdData;
+            private T m_MaxIdData;
             private IDataParser m_Parser;
-
-            public override Type DataType
+            
+            public Type DataType
             {
                 get
                 {
@@ -29,14 +31,15 @@ namespace uData
                 }
             }
 
-            public override int Count
+            public int Count
             {
                 get
                 {
                     return m_dict.Count;
                 }
             }
-            public override IGameData this[int id]
+            
+            public T this[int id]
             {
                 get
                 {
@@ -67,7 +70,7 @@ namespace uData
                 }               
             }
 #endif
-            public  override IGameData MinIdData
+            public T MinIdData
             {
                 get
                 {
@@ -75,7 +78,7 @@ namespace uData
                 }
             }
 
-            public override IGameData MaxIdData
+            public T MaxIdData
             {
                 get
                 {
@@ -83,8 +86,7 @@ namespace uData
                 }
             }
 
-     
-
+            
             public DataTable(string _name)
                 : base(_name)
             {
@@ -92,46 +94,35 @@ namespace uData
                 TableFilePathsAttribute attr= typeof(T).GetTableFilesAttributes();
                 m_Parser = (IDataParser)Activator.CreateInstance(attr.ParserType);         
             }
-            public override void Dispose()
+            
+            public T[] GetAllDatas()
             {
-                m_dict.Clear();
-#if UNITY_EDITOR && HOTEXCEL
-                m_HoTUpdateEventArg = null;
-#endif
-                m_Parser=null;
-            }
-            public override  IGameData[] GetAllDatas()
-            {
-                IGameData[] drs = new IGameData[m_dict.Count];
-                int count = 0;
-                foreach (var dr in m_dict)
-                {
-                    drs[count] = dr.Value;
-                    count++;
-                }
-                return drs;
+                return m_dict.Values.ToArray();
             }
 
-            public  override IGameData GetData(int id)
+            public T GetData(int id)
             {
                 T dr;
                 if (m_dict.TryGetValue(id, out dr))
                 {
                     return dr;
                 }
-                throw new System.Exception(string.Format("You use id read table is error. id:{0} Type : {1}" , id,typeof(T)));              
+
+                Debug.LogError(string.Format("You use id read table is error. id:{0} Type : {1}", id, typeof(T)));
+                return dr;
             }
 
             public IEnumerator<T> GetEnumerator()
             {
                 throw new NotImplementedException();
             }
-
-            public override bool HasData(int id)
+            
+            public bool HasData(int id)
             {
                 return m_dict.ContainsKey(id);
             }
-            public override void ReloadAll(TableFile _file )
+                
+            public void ReloadAll(TableFile _file )
             {
 #if UNITY_EDITOR && HOTEXCEL
 

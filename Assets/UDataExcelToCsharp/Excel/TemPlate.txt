@@ -1,7 +1,6 @@
 using uData;
 using System.Collections.Generic;
 using System.Collections;
-using uData;
 
 namespace {{ NameSpace }}
 {

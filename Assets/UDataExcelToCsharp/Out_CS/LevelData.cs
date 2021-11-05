@@ -1,7 +1,6 @@
 using uData;
 using System.Collections.Generic;
 using System.Collections;
-using uData;
 
 namespace s7u.dtb.exceldata
 {
@@ -17,7 +16,7 @@ namespace s7u.dtb.exceldata
     {
         
           /// <summary>
-          /// 序号
+          /// 序号Id
           /// </summary>
         public int Id { get; private set;}
         

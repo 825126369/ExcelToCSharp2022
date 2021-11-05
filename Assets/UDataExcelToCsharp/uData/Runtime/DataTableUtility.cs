@@ -12,20 +12,6 @@ namespace uData
             return primaryKey;
         }
 
-        public static bool IsFileSystemMode
-        {
-            get
-            {
-#if UNITY_EDITOR
-                    return true;
-#else
-                return false;
-#endif
-
-
-            }
-        }
-
         public static TableFilePathsAttribute GetTableFilesAttributes(this Type _type)
         {
             var attr = (TableFilePathsAttribute)_type.GetCustomAttributes(typeof(TableFilePathsAttribute), false).FirstOrDefault();

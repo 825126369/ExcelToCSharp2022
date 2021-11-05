@@ -1,0 +1,2 @@
+Id	CityID	CityName	CityBGIMG	CityIMG	CityColor
+int32	int32	string	string	string	int32

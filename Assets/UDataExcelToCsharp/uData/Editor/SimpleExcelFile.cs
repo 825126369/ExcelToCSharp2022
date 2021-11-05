@@ -95,7 +95,7 @@ namespace uData
         public Dictionary<int, string> Index2ColName { get; set; }
         public Dictionary<string, string> ColName2Statement { get; set; } //  string,or something
         public Dictionary<string, string> ColName2Comment { get; set; } // string comment
-
+        
         /// <summary>
         /// Header, Statement, Comment, at lease 3 rows
         /// 预留行数
